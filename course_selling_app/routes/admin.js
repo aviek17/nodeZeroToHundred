@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const adminMiddleware = require("../middlewares/admin");
-const { Admin } = require("../db/index")
+const { Admin, Course } = require("../db/index")
 
 
 router.post("/signup", async (req, res) => {
@@ -14,7 +14,7 @@ router.post("/signup", async (req, res) => {
 
     try {
         const data = await Admin.findOne({ userName });
-        if(data){
+        if (data) {
             return res.status(409).json({ error: "Admin already exists." });
         }
         const newAdmin = new Admin(
@@ -28,16 +28,33 @@ router.post("/signup", async (req, res) => {
     } catch (err) {
         return res.status(400).send("System error occured")
     }
+})
 
+router.post("/courses", adminMiddleware, async (req, res) => {
+    const { title, description, imageLink, price } = req.body;
+    if(!title || !price || price <=0 ){
+        return res.status(400).json({ error: "Title, price is required" });
+    }
+
+    try {
+        const newCourse = new Course({
+            title,
+            description,
+            imageLink,
+            price
+        })
+        await newCourse.save();
+        
+        res.status(201).json({ message: "Course created successfully." });
+    }
+    catch(err){
+        return res.status(400).send("System error occured")
+    }
 
 })
 
-router.post("/courses", adminMiddleware, (req, res) => {
 
-})
-
-
-router.get("/courses", adminMiddleware, (req, res) => {
+router.get("/courses", adminMiddleware, async (req, res) => {
 
 })
 
