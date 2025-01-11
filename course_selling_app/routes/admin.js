@@ -55,7 +55,13 @@ router.post("/courses", adminMiddleware, async (req, res) => {
 
 
 router.get("/courses", adminMiddleware, async (req, res) => {
-
+    try{
+        const courseList = await Course.find({});
+        return res.status(200).json({courseList})
+    }
+    catch(err){
+        return res.status(500).send("System error occurred");
+    }
 })
 
 
