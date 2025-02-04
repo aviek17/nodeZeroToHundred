@@ -49,6 +49,11 @@ const CourseSchema = new mongoose.Schema({
     price : {
         type: Number,
         required: true
+    },
+    isPublished : {
+        type : Boolean,
+        required : true,
+        default : false
     }
 })
 

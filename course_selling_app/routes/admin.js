@@ -31,7 +31,7 @@ router.post("/signup", async (req, res) => {
 })
 
 router.post("/courses", adminMiddleware, async (req, res) => {
-    const { title, description, imageLink, price } = req.body;
+    const { title, description, imageLink, price, isPublished } = req.body;
     if(!title || !price || price <=0 ){
         return res.status(400).json({ error: "Title, price is required" });
     }
@@ -41,7 +41,8 @@ router.post("/courses", adminMiddleware, async (req, res) => {
             title,
             description,
             imageLink,
-            price
+            price,
+            isPublished
         })
         await newCourse.save();
         
@@ -57,7 +58,7 @@ router.post("/courses", adminMiddleware, async (req, res) => {
 router.get("/courses", adminMiddleware, async (req, res) => {
     try{
         const courseList = await Course.find({});
-        return res.status(200).json({courseList})
+        return res.status(200).json({courseList});
     }
     catch(err){
         return res.status(500).send("System error occurred");
