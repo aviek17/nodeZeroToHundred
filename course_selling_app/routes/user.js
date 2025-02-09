@@ -35,8 +35,39 @@ router.get("/courses", async (req, res) => {
     }
 })
 
-
+//add purchased course under user
 router.post("/courses/:courseId", userMiddleware, async (req, res) => {
+    const username = req.headers.username;
+    const courseId = req.params.courseId;
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ error: "Course not found." });
+        }
+
+        //const coursePurchased = await User.findOne({userName : username});
+        //if(coursePurchased.purchasedCourses.includes(courseId)){
+        //  return res.status(409).json({ error: "Course already purchased." });
+        //}
+        //const user = await User.findOneAndUpdate({ userName: username }, { $push: { purchasedCourses: courseId } }, { new: true });
+        //return res.status(200).json({ message: "Course added to purchased courses successfully." });
+
+        const updatedUser = await User.findOneAndUpdate(
+            { userName: username, purchasedCourses: { $ne: courseId } }, // Only update if courseId is not in purchasedCourses
+            { $push: { purchasedCourses: courseId } },
+            { new: true } // Return the updated user document
+        );
+
+        if (!updatedUser) {
+            return res.status(409).json({ error: "Course already purchased" });
+        }
+
+        return res.status(200).json({ message: "Course added to purchased courses successfully." });
+    }
+    catch (err) {
+        return res.status(500).send("System error occurred");
+    }
 
 })
 
