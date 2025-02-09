@@ -27,7 +27,7 @@ router.post("/signup", async (req, res) => {
 
 router.get("/courses", async (req, res) => {
     try {
-        const courseList = await Course.find({ isPublished: true });
+        const courseList = await Course.find({ isPublished: true }).select("_id title description imageLink price");
         return res.status(200).json({ courseList });
     }
     catch (err) {
@@ -63,7 +63,7 @@ router.post("/courses/:courseId", userMiddleware, async (req, res) => {
             return res.status(409).json({ error: "Course already purchased" });
         }
 
-        return res.status(200).json({ message: "Course added to purchased courses successfully." });
+        return res.status(200).json({ message: "Course purchased successfully." });
     }
     catch (err) {
         return res.status(500).send("System error occurred");
@@ -72,7 +72,22 @@ router.post("/courses/:courseId", userMiddleware, async (req, res) => {
 })
 
 router.get("/purchased-courses", userMiddleware, async (req, res) => {
+    const userName = req.headers.username;
+    try {
+        const user = await User.findOne({ userName });
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+        const courseList = await Course.find({
+            _id: { $in: user.purchasedCourses }
+        }).select("_id title description imageLink price");
 
+        return res.status(200).json({ purchasedCourses: courseList });
+
+    }
+    catch (e) {
+        return res.status(500).send("System error occurred");
+    }
 })
 
 
