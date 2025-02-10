@@ -6,6 +6,7 @@ require('dotenv').config();
 const PORT = process.env.BACKEND_PORT;
 
 
+
 //routes
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/user");
@@ -14,8 +15,8 @@ const userRoutes = require("./routes/user");
 //middlewares
 const app = express();
 app.use(express.json());
-app.use("/admin",adminRoutes);
-app.use("/user",userRoutes);
+app.use("/admin", adminRoutes);
+app.use("/user", userRoutes);
 
 
 app.listen(PORT, (req, res) => {
